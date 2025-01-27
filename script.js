@@ -2,10 +2,15 @@ const redux = require('redux')
 
 
 const ORDER = "ORDER"
+const BUNS = "BUNS"
 
 //action => object
-const action = {
+const actionOrder = {
     type: ORDER,
+    shop_name: "test name"
+}
+const actionBuns = {
+    type: BUNS,
     shop_name: "test name"
 }
 
@@ -17,13 +22,22 @@ function orderCreator() {
     }
 }
 
+function bunsCreator() {
+    return {
+        type: BUNS,
+        shop_name: "test buns"
+    }
+}
+
 //reducer
-const initialState = {
+const initialStateOrder = {
     base: 1000,
-    buns: 1000,
     cheese: ['cheddar', 'gouda', 'brie'],
 }
-const reducer = (state = initialState, action) => {
+const initialStateBuns = {
+    buns: 1000,
+}
+const reducerOrder = (state = initialStateOrder, action) => {
     switch (action.type) {
         case ORDER:
             return {
@@ -34,11 +48,28 @@ const reducer = (state = initialState, action) => {
             return state
     }
 }
+const reducerBuns = (state = initialStateBuns, action) => {
+    switch (action.type) {
+        case BUNS:
+            return {
+                ...state,
+                buns: state.buns + 5
+            }
+        default:
+            return state
+    }
+}
 
 
 //STORE - init state is in reducer function passed
 const createStore = redux.createStore
-const store = createStore(reducer)
+const combineReducers = redux.combineReducers
+
+const rootReducer = combineReducers({
+    order: reducerOrder,
+    buns: reducerBuns
+})
+const store = createStore(rootReducer)
 
 console.log("inital state", store.getState())
 
