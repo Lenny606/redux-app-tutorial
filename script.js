@@ -1,4 +1,18 @@
 const redux = require('redux')
+const reduxLogger = require('redux-logger')
+
+//logger
+const applyMiddleware = redux.applyMiddleware
+const logger = reduxLogger.createLogger({
+    level: 'info',
+    collapsed: true,
+    predicate: (getState, action) => action.type === ORDER,
+    transformer: (state, action) => ({
+        type: action.type,
+        payload: action.payload,
+        state: state,
+    }),
+})
 
 
 const ORDER = "ORDER"
@@ -69,7 +83,7 @@ const rootReducer = combineReducers({
     order: reducerOrder,
     buns: reducerBuns
 })
-const store = createStore(rootReducer)
+const store = createStore(rootReducer, applyMiddleware(logger)) //+MW
 
 console.log("inital state", store.getState())
 
@@ -84,4 +98,4 @@ unsubscribe();
 store.dispatch(orderCreator())
 store.dispatch(orderCreator())
 
-console.log("last state", store.getState())
+// console.log("last state", store.getState())
