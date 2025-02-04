@@ -1,2 +1,2 @@
 # redux-app-tutorial
-# redux-app-tutorial
+# vanilla JS

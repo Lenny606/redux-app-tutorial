@@ -1,7 +1,9 @@
 const redux = require('redux')
+const thunk = require('redux-thunk').thunk
+const axios = require('axios')
 const createStore = redux.createStore
-
-//REACT THHUNK - ASYNC MW<
+const applyMiddleware = redux.applyMiddleware
+//REACT THHUNK - ASYNC MW
 
 //ACtion types
 const FETCH_REQUEST = 'FETCH_REQUEST'
@@ -59,24 +61,43 @@ const reducer = (state = initState, action) => {
 
     }
 }
+
+//Thunk actions creator - returns functions, not pure, allows async (reducer has pure)
+const fetchProducts = () => {
+    return function (dispatch) {
+
+        dispatch(fetchRequest())//dispatchig req first
+
+        axios.get('https://fakestoreapi.com/products').then(res => {
+            const products = res.data.map(item => item.title)
+            dispatch(fetchSuccess(products))
+        }).catch(error => {
+            dispatch(fetchError())
+        })
+    }
+}
+
 //STORE
- const store = createStore(reducer)
+const store = createStore(reducer, applyMiddleware(thunk))
 
- //SUBSCRIBE
- store.subscribe(() => {
-     console.log(store.getState())
- })
+//SUBSCRIBE
+store.subscribe(() => {
+    console.log(store.getState())
+})
 
- //DISPATCH ACTIONS
- store.dispatch(fetchRequest())
+//DISPATCH ACTIONS
+// store.dispatch(fetchRequest())
+//
+// setTimeout(() => {
+//     store.dispatch(fetchSuccess([
+//         {id: 1, name: 'Product 1'},
+//         {id: 2, name: 'Product 2'}
+//     ]))
+// }, 2000)
+//
+// setTimeout(() => {
+//     store.dispatch(fetchError())
+// }, 4000)
 
- setTimeout(() => {
-     store.dispatch(fetchSuccess([
-         { id: 1, name: 'Product 1' },
-         { id: 2, name: 'Product 2' }
-     ]))
- }, 2000)
-
- setTimeout(() => {
-     store.dispatch(fetchError())
- }, 4000)
+//ASYNC
+store.dispatch(fetchProducts())
