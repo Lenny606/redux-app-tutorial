@@ -30,4 +30,6 @@ const reducer = (state = initState, action) => {
     }
 }
 const store = redux.createStore(reducer)
-store.dispatch(updateBread())
+const unsubscribe = store.subscribe(() => console.log("Updated state: ", store.getState()))
+store.dispatch(updateBread("new "))
+unsubscribe()
